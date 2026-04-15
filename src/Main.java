@@ -38,8 +38,16 @@ public class Main {
                     case 2:
                         System.out.print("Enter user ID: ");
                         int userId = scanner.nextInt();
-                        Account acc = bank.createAccount(userId);
-                        System.out.println("Created account with ID: " + acc.getId());
+                        Result<Account> createResult = bank.createAccount(userId);
+
+                        if (!createResult.isSuccess()){
+                            System.out.println("Error: " + createResult.getError());
+                        }
+                        else {
+                            System.out.println("Creating successful");
+                            System.out.println("Created account with ID: " + createResult.getData().getId());
+                        }
+
                         break;
 
                     case 3:
@@ -67,7 +75,7 @@ public class Main {
                         Result<Void> withdrawResult = bank.withdraw(accId, amount);
 
                         if (!withdrawResult.isSuccess()){
-                            System.out.println("Errror: " + withdrawResult.getError());
+                            System.out.println("Error: " + withdrawResult.getError());
                         }
                         else {
                             System.out.println("Withdraw successful");

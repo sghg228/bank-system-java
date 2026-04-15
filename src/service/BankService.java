@@ -39,11 +39,13 @@ public class BankService {
            loadUsers();
        }
 
-       public Account createAccount(int userId){
+       public Result<Account> createAccount(int userId){
+           User user = findUser(userId);
+           if (user == null) return Result.fail("User with id: " + userId + " doesn't exist");
            Account account = new Account(accountIdBase++, userId);
            accounts.add(account);
            save();
-           return account;
+           return Result.ok(account);
        }
 
        public Account findAccount(int id){
