@@ -6,6 +6,8 @@ import model.Account;
 
 import storage.FileStorage;
 
+import logging.AuditLogger;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -40,6 +42,7 @@ public class BankService {
            User user = new User(userIdBase++, name);
            users.add(user);
            save();
+           AuditLogger.log("User created: id=" + user.getId() + ", name=" + user.getName());
            return user;
        }
 
@@ -56,6 +59,7 @@ public class BankService {
            Account account = new Account(accountIdBase++, userId);
            accounts.add(account);
            save();
+           AuditLogger.log("Account created: id=" + account.getId() + ", userId=" + user.getId());
            return Result.ok(account);
        }
 
@@ -77,7 +81,11 @@ public class BankService {
            Account account = findAccount(accountId);
            if (account == null) return Result.fail("Account not found");
            Result<Account> depositResult = account.deposit(amount);
-           if (!depositResult.isSuccess()) return Result.fail(depositResult.getError());
+           if (!depositResult.isSuccess()){
+               AuditLogger.log("Failed deposit: userId=" + account.getUserId() + ", reason=" + depositResult.getError());
+               return Result.fail(depositResult.getError());
+           }
+           AuditLogger.log("Deposit: userID=" + account.getUserId() + "amount=" + amount);
            save();
            return Result.ok(null);
        }
@@ -86,7 +94,11 @@ public class BankService {
            Account account = findAccount(accountId);
            if (account == null) return Result.fail("Account not found");
            Result<Account> withdrawResult = account.withdraw(amount);
-           if (!withdrawResult.isSuccess()) return Result.fail(withdrawResult.getError());
+           if (!withdrawResult.isSuccess()){
+               AuditLogger.log("Failed withdraw: userId=" + account.getUserId() + ", reason=" + withdrawResult.getError());
+               return Result.fail(withdrawResult.getError());
+           }
+           AuditLogger.log("Withdraw: userID=" + account.getUserId() + "amount=" + amount);
            save();
            return Result.ok(null);
        }
@@ -94,9 +106,25 @@ public class BankService {
        public Result<Void> transfer(int fromId, int toID, double amount){
            Account from = findAccount(fromId);
            Account to = findAccount(toID);
-           if (from == null || to == null) return Result.fail("Account not found");
+           if (from == null || to == null){
+               AuditLogger.log("Error: account not found");
+               return Result.fail("Account not found");
+           }
            Result<Account> withdrawResult = from.withdraw(amount);
-           if (!withdrawResult.isSuccess()) return Result.fail(withdrawResult.getError());
+           if (!withdrawResult.isSuccess()){
+               AuditLogger.log("Error transfer(withdraw): from=" + fromId + ", to=" + toID + ", reason=" + withdrawResult.getError());
+               return Result.fail(withdrawResult.getError());
+           }
+           Result<Account> depositeResult = from.deposit(amount);
+//           if (!depositeResult.isSuccess()){
+//               AuditLogger.log("Error transfer(deposit): from=" + fromId + ", to=" + toID + ", reason=" + withdrawResult.getError());
+//               Result<Account> depositeBackResult = from.deposit(amount);
+//               if (!depositeBackResult.isSuccess()){
+//                   AuditLogger.log("Fatal error: accountID=" + from.getId() + " lose money amount=" + amount);
+//               }
+//               return Result.fail(depositeResult.getError());
+//           }
+           AuditLogger.log("Transfer: fromId=" + fromId + ", toId=" + toID + ", amount=" + amount);
            save();
            return Result.ok(null);
        }
@@ -113,6 +141,7 @@ public class BankService {
 
            storage.saveAccountAsync(accounts);
            storage.saveUserAsync(users);
+           AuditLogger.log("SAVE");
 
 
        }
