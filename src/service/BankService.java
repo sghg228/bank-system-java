@@ -1,5 +1,6 @@
 package service;
 
+import model.Result;
 import model.User;
 import model.Account;
 
@@ -33,24 +34,29 @@ public class BankService {
            return null;
        }
 
-       public void deposit(int accountId,double amount){
+       public Result<Void> deposit(int accountId,double amount){
            Account account = findAccount(accountId);
-           if (account == null) throw  new IllegalArgumentException("Account not found");
-           account.deposit(amount);
+           if (account == null) return Result.fail("Account not found");
+           Result<Account> depositResult = account.deposit(amount);
+           if (!depositResult.isSuccess()) return Result.fail(depositResult.getError());
+           return Result.ok(null);
        }
 
-       public void  withdraw(int accountId, double amount){
+       public Result<Void>  withdraw(int accountId, double amount){
            Account account = findAccount(accountId);
-           if (account == null) throw new IllegalArgumentException("Account not found");
-           account.withdraw(amount);
+           if (account == null) return Result.fail("Account not found");
+           Result<Account> withdrawResult = account.withdraw(amount);
+           if (!withdrawResult.isSuccess()) return Result.fail(withdrawResult.getError());
+           return Result.ok(null);
        }
 
-       public void transfer(int fromId, int toID, double amount){
+       public Result<Void> transfer(int fromId, int toID, double amount){
            Account from = findAccount(fromId);
            Account to = findAccount(toID);
-           if (from == null || to == null) throw new IllegalArgumentException("One of account not found");
-           from.withdraw(amount);
-           from.deposit(amount);
+           if (from == null || to == null) return Result.fail("Account not found");
+           Result<Account> withdrawResult = from.withdraw(amount);
+           if (!withdrawResult.isSuccess()) return Result.fail(withdrawResult.getError());
+           return Result.ok(null);
        }
 
        public List<Account> getAccounts(){
