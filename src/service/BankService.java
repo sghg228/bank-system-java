@@ -116,14 +116,14 @@ public class BankService {
                return Result.fail(withdrawResult.getError());
            }
            Result<Account> depositeResult = from.deposit(amount);
-//           if (!depositeResult.isSuccess()){
-//               AuditLogger.log("Error transfer(deposit): from=" + fromId + ", to=" + toID + ", reason=" + withdrawResult.getError());
-//               Result<Account> depositeBackResult = from.deposit(amount);
-//               if (!depositeBackResult.isSuccess()){
-//                   AuditLogger.log("Fatal error: accountID=" + from.getId() + " lose money amount=" + amount);
-//               }
-//               return Result.fail(depositeResult.getError());
-//           }
+           if (!depositeResult.isSuccess()){
+               AuditLogger.log("Error transfer(deposit): from=" + fromId + ", to=" + toID + ", reason=" + withdrawResult.getError());
+               Result<Account> depositeBackResult = from.deposit(amount);
+               if (!depositeBackResult.isSuccess()){
+                   AuditLogger.log("Fatal error: accountID=" + from.getId() + " lose money amount=" + amount);
+               }
+               return Result.fail(depositeResult.getError());
+           }
            AuditLogger.log("Transfer: fromId=" + fromId + ", toId=" + toID + ", amount=" + amount);
            save();
            return Result.ok(null);
