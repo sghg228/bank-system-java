@@ -19,17 +19,30 @@ public class Account {
         return balance;
     }
 
-    public void deposit(double amount) {
-        validateAmount(amount);
-        balance += amount;
+    public Result<Account> deposit(double amount) {
+
+        if (amount <= 0) {
+            return Result.fail("Amount must be positive");
+        }
+
+        this.balance += amount;
+
+        return Result.ok(this);
     }
 
-    public void withdraw(double amount){
-        validateAmount(amount);
-        if (balance < amount){
-            throw new IllegalStateException("Not enough money");
+    public Result<Account> withdraw(double amount) {
+
+        if (amount <= 0) {
+            return Result.fail("Amount must be positive");
         }
+
+        if (balance < amount) {
+            return Result.fail("Not enough money");
+        }
+
         balance -= amount;
+
+        return Result.ok(this);
     }
 
     private void validateAmount(double amount) {
