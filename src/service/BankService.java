@@ -13,7 +13,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-
+/**
+ * Service responsible for managing bank operations such as
+ * account creation, deposits, withdrawals and transfers.
+ */
 public class BankService {
        private List<User> users = new ArrayList<>();
        private List<Account> accounts = new ArrayList<>();
