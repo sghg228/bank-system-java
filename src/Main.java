@@ -1,6 +1,7 @@
 import service.BankService;
 import model.Account;
 import model.User;
+import model.Result;
 
 import java.util.Scanner;
 
@@ -47,8 +48,14 @@ public class Main {
                         System.out.print("Enter amount: ");
                         double amount = scanner.nextDouble();
 
-                        bank.deposit(accId, amount);
-                        System.out.println("Deposit successful");
+                        Result<Void> depositResult = bank.deposit(accId,amount);
+
+                        if (!depositResult.isSuccess()){
+                            System.out.println("Error: " + depositResult.getError());
+                        }
+                        else {
+                            System.out.println("Deposit successful");
+                        }
                         break;
 
                     case 4:
@@ -57,8 +64,14 @@ public class Main {
                         System.out.print("Enter amount: ");
                         amount = scanner.nextDouble();
 
-                        bank.withdraw(accId, amount);
-                        System.out.println("Withdraw successful");
+                        Result<Void> withdrawResult = bank.withdraw(accId, amount);
+
+                        if (!withdrawResult.isSuccess()){
+                            System.out.println("Errror: " + withdrawResult.getError());
+                        }
+                        else {
+                            System.out.println("Withdraw successful");
+                        }
                         break;
 
                     case 5:
@@ -69,9 +82,13 @@ public class Main {
                         System.out.print("Amount: ");
                         amount = scanner.nextDouble();
 
-                        bank.transfer(fromId, toId, amount);
-                        System.out.println("Transfer successful");
-                        break;
+                        Result<Void> transferResult = bank.transfer(fromId, toId, amount);
+
+                        if (!transferResult.isSuccess()) {
+                            System.out.println("Error: " + transferResult.getError());
+                        } else {
+                            System.out.println("Transfer successful");
+                        }
 
                     case 6:
                         for (Account a : bank.getAccounts()) {
