@@ -28,15 +28,26 @@ public class BankService {
             users = storage.loadUser();
        }
 
+       private void findLatestUserId(){
+           userIdBase = users.getLast().getId() + 1;
+       }
+
+       private void findLatestAccountId(){
+           accountIdBase = accounts.getLast().getId() + 1;
+       }
+
        public User createUser(String name){
            User user = new User(userIdBase++, name);
            users.add(user);
+           save();
            return user;
        }
 
        public void start(){
            loadAccounts();
            loadUsers();
+           if (!users.isEmpty()) findLatestUserId();
+           if (!accounts.isEmpty()) findLatestAccountId();
        }
 
        public Result<Account> createAccount(int userId){
