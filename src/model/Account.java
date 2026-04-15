@@ -19,6 +19,10 @@ public class Account {
         return balance;
     }
 
+    public int getUserId() {
+        return userId;
+    }
+
     public Result<Account> deposit(double amount) {
 
         if (amount <= 0) {

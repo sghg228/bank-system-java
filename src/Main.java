@@ -8,9 +8,9 @@ import java.util.Scanner;
 public class Main {
 
     public static void main(String[] args) {
-
         BankService bank = new BankService();
         Scanner scanner = new Scanner(System.in);
+        bank.start();
 
         while (true) {
             System.out.println("\n=== BANK MENU ===");
