@@ -118,7 +118,7 @@ public class BankService {
                AuditLogger.log("Error transfer(withdraw): from=" + fromId + ", to=" + toID + ", reason=" + withdrawResult.getError());
                return Result.fail(withdrawResult.getError());
            }
-           Result<Account> depositeResult = from.deposit(amount);
+           Result<Account> depositeResult = to.deposit(amount);
            if (!depositeResult.isSuccess()){
                AuditLogger.log("Error transfer(deposit): from=" + fromId + ", to=" + toID + ", reason=" + withdrawResult.getError());
                Result<Account> depositeBackResult = from.deposit(amount);
