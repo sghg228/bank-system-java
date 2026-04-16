@@ -97,6 +97,7 @@ public class Main {
                         } else {
                             System.out.println("Transfer successful");
                         }
+                        break;
 
                     case 6:
                         for (Account a : bank.getAccounts()) {
